@@ -22,6 +22,7 @@ function down() {
 	docker rm kasm-dind
 }
 
+# VNC_USERNAME="kasm_user"
 function up() {
 	down
 	internal_mkdir
@@ -31,6 +32,7 @@ function up() {
 		--hostname=kasmweb \
 		--shm-size=512m \
 		-p 6901:6901 \
+		-p 2901:22 \
 		-e VNC_PW=password \
 		-v $(pwd)/data/docker:/var/lib/docker \
 		-v $(pwd)/data/kasm-user:/home/kasm-user \

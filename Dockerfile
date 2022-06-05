@@ -11,8 +11,8 @@ WORKDIR $HOME
 RUN apt update && \
 	apt upgrade -y && \
 	apt install -y sudo \
-		openssh-server nano wget \ 
-		curl geany tree git gedit && \
+		openssh-server nano wget gdebi-core \ 
+		curl geany tree git gedit gpg && \
 	curl -fsSL https://get.docker.com -o get-docker.sh && \
 	sh get-docker.sh && \
 	rm -rf get-docker.sh && \
@@ -21,7 +21,68 @@ RUN apt update && \
 	apt-get autoclean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN 
+RUN apt update && \
+	apt upgrade -y && \
+	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && \
+	install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/ && \
+	sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list' && \
+	apt install apt-transport-https && \
+	sudo apt update && \
+	apt install -y code && \
+	apt-get clean && \
+	apt-get autoremove -y && \
+	apt-get autoclean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt update && \
+	apt upgrade -y && \
+	wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+	echo "y" | gdebi google-chrome-stable_current_amd64.deb && \
+	rm -rf gdebi google-chrome-stable_current_amd64.deb && \
+	apt-get clean && \
+	apt-get autoremove -y && \
+	apt-get autoclean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt update && \
+	apt upgrade -y && \
+	apt install -y tilix \
+		ca-certificates htop gnupg apt-utils locales openssl xz-utils filezilla fuse rsync \
+		pigz netstat-nat w3m iputils-ping iproute2 python3 python3-pip unzip zip evince \
+		busybox p7zip-full software-properties-common make build-essential retext \
+		lsb-release iptables telnet bash-completion net-tools tzdata abiword gnumeric parcellite && \
+	apt-get clean && \
+	apt-get autoremove -y && \
+	apt-get autoclean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt-get update && \
+	apt-get install -y gnupg software-properties-common curl && \
+	curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - && \
+	sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
+	sudo apt-get update && sudo apt-get install terraform && \
+	apt-get clean && \
+	apt-get autoremove -y && \
+	apt-get autoclean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime && \
+	dpkg-reconfigure -f noninteractive tzdata
+
+RUN pip3 install --no-cache-dir runlike && \
+	curl https://rclone.org/install.sh | sudo bash && \
+	echo "user_allow_other" > /etc/fuse.conf && chmod 775 /etc/fuse.conf
+
+RUN git clone https://github.com/facebook/zstd.git /tmp/zstd && \
+	cd /tmp/zstd && make && cd programs && cp -a zstd /usr/local/bin && \
+	rm -rf /tmp/zstd
+
+RUN apt-get update && \
+	apt-get install -y thunar-archive-plugin && \
+	apt-get clean && \
+	apt-get autoremove -y && \
+	apt-get autoclean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN /usr/bin/ssh-keygen -A && \
 	addgroup --gid 1000 kasm-user && \
@@ -42,6 +103,8 @@ COPY assets/generate_container_user /dockerstartup/generate_container_user
 COPY assets/kasm_default_profile.sh /dockerstartup/kasm_default_profile.sh
 COPY assets/custom_startup.sh ${STARTUPDIR}/custom_startup.sh
 RUN chmod +x ${STARTUPDIR}/custom_startup.sh
+
+COPY --chown=kasm-user:kasm-user assets/desktop_shortcut /opt/shortcut
 
 ######### End Customizations ###########
 

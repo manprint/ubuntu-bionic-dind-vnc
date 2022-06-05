@@ -65,6 +65,9 @@ $STARTUPDIR/browser_proxy_config.sh
 mkdir -vp /home/kasm-user/
 sudo chown -R kasm-user:kasm-user /home/kasm-user/
 
+# Copy desktop shortcut
+sudo cp -va /opt/shortcut/* /home/kasm-user/Desktop/
+
 # unknown option ==> call command
 echo -e "\n\n------------------ EXECUTE COMMAND ------------------"
 echo "Executing command: '$@'"
