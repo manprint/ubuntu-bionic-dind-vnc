@@ -1,14 +1,9 @@
 #!/bin/bash
 
-function echofile() {
-	local file=output.log
-	echo "$@" 2>&1 | tee -a $file
-}
-
 RED=$(tput setaf 1)
 YELLOW=$(tput setaf 2)
 RESET=$(tput sgr0)
-DESC="Manage Kasm Dind"
+DESC="Manage Kasm Dind VNC"
 
 function internal_mkdir() {
 	mkdir -vp $(pwd)/data/docker
@@ -36,7 +31,7 @@ function up() {
 		-e VNC_PW=password \
 		-v $(pwd)/data/docker:/var/lib/docker \
 		-v $(pwd)/data/kasm-user:/home/kasm-user \
-		kasmweb/core-ubuntu-bionic:1.10.1
+		ghcr.io/manprint/ubuntu-bionic-dind-vnc:latest
 }
 
 function help() {
