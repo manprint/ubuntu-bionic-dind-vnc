@@ -79,10 +79,15 @@ RUN git clone https://github.com/facebook/zstd.git /tmp/zstd && \
 
 RUN apt-get update && \
 	apt-get install -y thunar-archive-plugin && \
+	wget https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb && \
+	apt install -y ./dbeaver-ce_latest_amd64.deb && \
+	rm -rf dbeaver-ce_latest_amd64.deb && \
+	curl -1sLf 'https://dl.cloudsmith.io/public/asbru-cm/release/cfg/setup/bash.deb.sh' | sudo -E bash && \
+	sudo apt install -y asbru-cm && \
 	apt-get clean && \
 	apt-get autoremove -y && \
 	apt-get autoclean && \
-	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
 RUN /usr/bin/ssh-keygen -A && \
 	addgroup --gid 1000 kasm-user && \
